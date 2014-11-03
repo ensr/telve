@@ -2,6 +2,7 @@
 	set_time_limit(0);
 	ini_set('default_socket_timeout',300);
 	session_start();
+	header('Content-Type: text/html; charset=utf-8');
 	
 	define("clientID", 'b951c5abc99e46e1b9d586ad8b439354');
 	define("clientSecret", 'c3b20001e53648249b13f27637a53505');
@@ -23,21 +24,32 @@
 	}
 
 	function printTagImages($tag){
-		$url = 'https://api.instagram.com/v1/tags/'.$tag.'/media/recent?client_id='.clientID.'&count=6';
+		$url = 'https://api.instagram.com/v1/tags/'.$tag.'/media/recent?client_id='.clientID.'&count=30';
 		$instagramInfo = connectToInstagram($url);
 		$results = json_decode($instagramInfo, true);
-		
+
 		foreach($results['data'] as $items ){
+
 			$image_url = $items['images']['low_resolution']['url'];
+			$comments = $items['comments'];
+			$ileti = $items['caption']['text'];
+			$username = $items['caption']['from']['username'];
+
+			echo $items['user']['username'].'</br>';
 			echo '<img src="'.$image_url.'"/></br>';
+			echo '<b>'.$username.'</b>:  '.$ileti.'</br>';
 			
+			foreach($comments['data'] as $commit){
+				echo '<b>'.$commit['from']['username'].'</b>:  '.$commit['text'].'</br>';
+			}
+			echo '</br>';
 		}
 	
 	}	
 	
 
 	if($_GET['code']){
-		$tag = "telve";
+		$tag = "istanbul";
 		printTagImages($tag);
 
 	}else{
